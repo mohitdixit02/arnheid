@@ -1,0 +1,18 @@
+[package]
+name = "arnheid"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.82"
+description = "Arnheid — a context capture protocol"
+license = "MIT"
+
+[[bin]]
+name = "arnheid"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+anyhow = "1"
+thiserror = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

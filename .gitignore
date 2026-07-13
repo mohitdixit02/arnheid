@@ -1,0 +1,12 @@
+/target**
+.env*
+*.log
+.DS_Store
+client_secret_*.json
+.agents
+
+# agent/ (Python autonomous-agent bot)
+agent/.venv
+agent/workspace/
+__pycache__/
+*.pyc
