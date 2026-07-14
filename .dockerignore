@@ -1,0 +1,8 @@
+target/
+.git/
+.env
+scratch/
+crates/
+*.exe
+*.md
+docker-compose*.yml
