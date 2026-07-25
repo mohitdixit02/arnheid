@@ -4,3 +4,4 @@ pub mod http;
 pub mod db;
 pub mod bot;
 pub mod whatsapp;
+pub mod ingestion;
