@@ -9,3 +9,4 @@ pub mod intake;
 pub mod llm;
 pub mod cron;
 pub mod search;
+pub mod scorer;
