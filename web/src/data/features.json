@@ -1,0 +1,32 @@
+[
+  {
+    "icon": "MessageSquareText",
+    "title": "Text Ingestion & Memory",
+    "description": "Store all shared summaries, messages, and custom ideas passively in a database buffer to preserve short-term chat context."
+  },
+  {
+    "icon": "Link",
+    "title": "Webpage Scraping",
+    "description": "Instantly fetch and clean the readable text of any shared URL (links, documentation, or code repos) in the background."
+  },
+  {
+    "icon": "Search",
+    "title": "Web Search Interceptors",
+    "description": "Fall back on live search command-line queries and custom wttr.in weather lookup to provide up-to-date answers."
+  },
+  {
+    "icon": "Cpu",
+    "title": "Smart Agentic Loop",
+    "description": "Iterative 5-turn reasoning loop letting the LLM decide which tool to call or when to formulate its final reply."
+  },
+  {
+    "icon": "Mail",
+    "title": "GSuite Integrations",
+    "description": "Autonomous actions over connected GSuite accounts — search and read messages, send emails, and create calendar events."
+  },
+  {
+    "icon": "Network",
+    "title": "Knowledge Graph Construction",
+    "description": "Extract entities and relationships from captures, structuring them into a queryable knowledge graph stored in CockroachDB."
+  }
+]

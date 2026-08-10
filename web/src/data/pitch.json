@@ -1,0 +1,30 @@
+{
+  "title": "ARNHEID",
+  "subtitle": "The Autonomous Memory Engine for Team Communication",
+  "pitchLine": "Powered by CockroachDB Cloud x AWS",
+  "description": "An intelligent, context-aware AI agent residing directly in your Telegram groups and DMs. Arnheid silently transcribes voice notes, parses links, constructs operational knowledge graphs, and triggers GSuite integrations — all secured by native database transaction logs and cloud-managed infrastructure.",
+  "links": {
+    "telegram": "https://t.me/arnheidgenbot",
+    "video": "#demo-video"
+  },
+  "cdbFeatures": [
+    {
+      "title": "CockroachDB Cloud Managed MCP Server",
+      "description": "We integrated the CockroachDB Cloud Managed MCP server by building a secure client connection that passes the cluster ID and authorization headers. This is used in the agent's chat interface, allowing the AI to list, inspect, and query database tables dynamically to retrieve information."
+    },
+    {
+      "title": "CockroachDB Vector Similarity Search",
+      "description": "We integrated CockroachDB's native vector support to store text embeddings alongside parsed webpage logs. This is used inside our retrieval pipeline, running cosine distance queries to find and fetch relevant memory context segments whenever a user asks the bot a question."
+    },
+    {
+      "title": "ccloud CLI Background Monitoring",
+      "description": "We built an automated health check task that runs hourly. It uses the CockroachDB Cloud CLI to verify that the cluster is fully active and check that daily database backups are created, automatically sending out Gmail alerts if any issues are detected."
+    }
+  ],
+  "architecturePitch": {
+    "title": "Why CockroachDB Cloud?",
+    "memoryDurability": "Unified Multi-Model Memory: By choosing CockroachDB, we consolidated our relational knowledge graph and high-dimensional semantic vectors into a single database. This avoids the overhead and consistency gaps of syncing separate relational and vector databases.",
+    "agentOrchestration": "Transactional Consistency: AI memories require absolute reliability. CockroachDB's distributed SQL engine provides serializable ACID transactions for our chat history buffers and graph edges, ensuring the agent never retrieves corrupted or duplicate memories.",
+    "awsHosting": "Elastic Serverless Scaling: We leverage CockroachDB Serverless to automatically scale with real-time Telegram group webhook ingestion, guaranteeing high availability for our agent's long-term memory layer under load."
+  }
+}

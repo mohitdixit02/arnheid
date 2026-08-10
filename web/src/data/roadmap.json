@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Omnichannel Ingestion & Integrations",
+    "description": "Expanding the bot's ingress from Telegram to platforms like WhatsApp, Slack, Microsoft Teams, and Discord. Implement unified webhooks to passively scrape shared links, index text notes, and transcribe voice memos across all your workspaces."
+  },
+  {
+    "title": "Extended MCP Tooling Ecosystem",
+    "description": "Equipping the agent with advanced Model Context Protocol (MCP) servers. Future capabilities include real-time Google Doc editing, multi-engine search routing (cross-verifying facts on Tavily, Google Search, and Bing), secure sandbox code execution, and automated calendar slot scheduling."
+  },
+  {
+    "title": "Dynamic Graph Visualization & Vector Space",
+    "description": "An interactive WebGL/Three.js-powered visualizer on the dashboard mapping semantic connections between links, documents, and notes. Browse your second brain's relational network in 3D, trace reasoning paths, and manually curate or prune memory nodes."
+  }
+]
