@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  # ── Arnheid Application Bot ────────────────────────────────────────────────
+  arnheid:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: arnheid_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8081:8080"
