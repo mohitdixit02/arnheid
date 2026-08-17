@@ -16,22 +16,6 @@
     "description": "Display capture statistics and a summary of your taste profile."
   },
   {
-    "command": "/taste",
-    "description": "View detailed interest tags, notification threshold, and active signal metrics."
-  },
-  {
-    "command": "/threshold <0.0-1.0>",
-    "description": "Fine-tune the similarity threshold for relevance notifications. Lower values increase notification sensitivity."
-  },
-  {
-    "command": "/mute | /unmute",
-    "description": "Temporarily pause (for 24 hours) or resume receiving relevance notifications via direct messages."
-  },
-  {
-    "command": "/ping",
-    "description": "Run active, real-time diagnostic checks on the database, chat model, embeddings, voice transcription, and WhatsApp APIs."
-  },
-  {
     "command": "@arnheid_bot <query>",
     "description": "Interact with the bot inside group chats. @mentioning with a question queries the group's memory; @mentioning with notes or media captures them."
   },
