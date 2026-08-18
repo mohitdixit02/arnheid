@@ -5,7 +5,7 @@
   "description": "An intelligent, context-aware AI agent residing directly in your Telegram groups and DMs. Arnheid silently transcribes voice notes, parses links, constructs operational knowledge graphs, and triggers GSuite integrations — all secured by native database transaction logs and cloud-managed infrastructure.",
   "links": {
     "telegram": "https://t.me/arnheidgenbot",
-    "video": "#demo-video"
+    "video": "https://www.youtube.com/watch?v=83nVtcb0QCE"
   },
   "cdbFeatures": [
     {
