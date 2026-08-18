@@ -59,7 +59,7 @@ on **AWS EC2**.
   background (articles, documentation, code repos), with `yt-dlp` pulling transcripts for YouTube
   links. No command or mention required in a group.
 - **Voice & photo capture** — Telegram voice notes are transcribed through an OpenAI-compatible
-  speech-to-text endpoint; photos are described by Claude vision. Both become first-class searchable
+  speech-to-text endpoint; photos are described by LLM vision. Both become first-class searchable
   items alongside links and notes.
 - **Durable ingestion queue** — every capture becomes an `ingestion_jobs` row in CockroachDB the
   moment it arrives, so a restart never loses one. A worker claims due rows, retries failures with
@@ -154,7 +154,7 @@ flowchart TB
 
     subgraph EXT["External services"]
         HF["Hugging Face<br/>embeddings"]
-        CLAUDE["Claude<br/>reasoning tiers"]
+        LLM["LLM"]
         GS["Google APIs<br/>Gmail · Calendar · Drive"]
         SEARCH["ddgr · wttr.in<br/>live web"]
     end
@@ -166,7 +166,7 @@ flowchart TB
     INTAKE -->|enqueue| QUEUE
     QUEUE --> WORKER
     WORKER --> HF
-    WORKER --> CLAUDE
+    WORKER --> LLM
     WORKER -->|write| REL
     WORKER -->|write| VEC
     WORKER --> SCORER
@@ -181,7 +181,7 @@ flowchart TB
     TOOLBOX -->|crdb_* MCP tools| CRDB
     TOOLBOX -->|gsuite_*| GS
     TOOLBOX -->|web_search| SEARCH
-    AGENT --> CLAUDE
+    AGENT --> LLM
     AGENT -->|cited answer| TG
 
     CRON --> GRAPH
@@ -235,7 +235,7 @@ flowchart LR
 flowchart TB
     Q["Question via /ask or @mention"] --> ROUTE{"Needs saved material,<br/>the web, or an account?"}
     ROUTE -->|no| ANS["Answer on turn 1<br/>no tool calls"]
-    ROUTE -->|yes| LOOP
+    ROUTE -->|yes| THINK
 
     subgraph LOOP["Bounded agent loop — max 5 turns"]
         direction TB
@@ -326,7 +326,6 @@ Three CockroachDB surfaces, each doing work nothing else in the stack does.
 | CockroachDB | The memory layer | Docker for local dev, or CockroachDB Cloud Serverless |
 | Telegram bot token | The channel | [@BotFather](https://t.me/BotFather) → `/newbot` |
 | Hugging Face token | Embeddings — required | [HF tokens](https://huggingface.co/settings/tokens), **Inference Providers** scope |
-| Anthropic API key | Reasoning tiers and photo vision | [console.anthropic.com](https://console.anthropic.com) |
 | `yt-dlp` | YouTube transcripts | [yt-dlp releases](https://github.com/yt-dlp/yt-dlp/releases) |
 | `ccloud` CLI | Cluster provisioning and monitoring | `brew install cockroachdb/tap/ccloud` |
 | `ddgr` | Web search backend (optional) | `pip install ddgr` |
@@ -512,15 +511,14 @@ by systemd's `EnvironmentFile` in production. `src/config.rs` is the authoritati
 | `TELEGRAM_BOT_TOKEN` | From @BotFather. The bot will not start without it. |
 | `DATABASE_URL` | CockroachDB connection string. Use `?sslmode=verify-full` against Cloud. |
 | `HF_API_KEY` | Hugging Face token with the **Inference Providers** scope, used for embeddings. |
-| `ANTHROPIC_API_KEY` | Reasoning tiers, the intent router, and photo vision. |
 
 ### Models
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `SONNET_MODEL` | `claude-sonnet-4-6` | Agentic loop and answer synthesis. |
-| `HAIKU_MODEL` | `claude-haiku-4-5-20251001` | Summaries, tags, excerpts, graph extraction. |
-| `ROUTER_MODEL` | `claude-haiku-4-5-20251001` | Message intent router, runs on every inbound message. |
+| `OLLAMA_BASE_URL` | `http://localhost:11434/v1` | OpenAI-compatible chat API endpoint (local Ollama or hosted provider like Groq/DeepSeek). |
+| `OLLAMA_CHAT_MODEL` | `qwen2.5:3b-instruct` | Chat model used for agent reasoning loop, summaries, and answer synthesis. |
+| `OLLAMA_ROUTER_MODEL` | — | Model used for intent router. Reuses chat model if left blank. |
 | `RAG_MODE` | `agentic` | `agentic` for the tool-calling loop, `pipeline` for the fixed retrieval sequence. |
 | `EMBEDDING_MODEL` | `BAAI/bge-large-en-v1.5` | Hugging Face feature-extraction model. |
 | `EMBEDDING_DIM` | `1024` | Must match the model. Changing it later needs a fresh database, since vector columns are created at this dimension on first boot. |
@@ -590,17 +588,7 @@ by systemd's `EnvironmentFile` in production. `src/config.rs` is the authoritati
 **Live bot** — [t.me/arnheidgenbot](https://t.me/arnheidgenbot). Send it a link, then ask a question
 about what you sent.
 
-**Walkthrough video** — *link to be added.*
-
-A short path through the implemented surface:
-
-1. Send the bot a link with no command, and watch the capture acknowledgement.
-2. Send a voice note describing what you are working on.
-3. `/ask` a question spanning both — one cited answer drawn from the article passages and the
-   transcribed voice note.
-4. `/buildgraph`, then ask something that only connects through a shared entity.
-5. `/ping` for live database, reasoning model, and embedding probes.
-6. Open the dashboard for cluster status, backup freshness, and climbing memory counts.
+**Walkthrough video** — [YouTube Video](https://www.youtube.com/watch?v=83nVtcb0QCE)
 
 ---
 
@@ -623,8 +611,7 @@ The schema already carries `channel`, `source`, and `content_type`, and identity
 
 | Model | Role |
 | --- | --- |
-| Claude Sonnet 4.6 | Agentic reasoning loop and cited answer synthesis |
-| Claude Haiku 4.5 | Summarization and tagging, knowledge-graph extraction, message intent routing, photo vision |
+| Qwen 2.5 / Llama 3 (via Ollama/Groq) | Agentic reasoning loop, summaries, tagging, graph extraction, and intent routing |
 | BAAI/bge-large-en-v1.5 | 1024-dimensional embeddings for passages, queries, and interest vectors, via Hugging Face Inference |
 | Whisper large-v3-turbo | Voice note transcription over an OpenAI-compatible endpoint |
 
@@ -670,24 +657,16 @@ MIT © Arnheid contributors
 [![Telegram](https://img.shields.io/badge/Telegram-@arnheidgenbot-2AABEE?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/arnheidgenbot)
 [![Email](https://img.shields.io/badge/Email-arnheid79%40gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:arnheid79@gmail.com)
 
-Issues and feature requests → [GitHub Issues](https://github.com/mohitdixit02/arnheid/issues) &nbsp;·&nbsp;
-Contributing → [CONTRIBUTING.md](CONTRIBUTING.md)
+Issues and feature requests → [GitHub Issues](https://github.com/mohitdixit02/arnheid/issues)
 
 </div>
 
-### Thanks
+### Acknowledgements
 
-To the **CockroachDB** team, for a database that made "one store for relational state, vectors, a
-graph, a durable queue, and agent memory" a real architectural choice rather than a compromise. The
-native `VECTOR` type and vector indexes removed an entire moving part from this system, and
-serializable transactions meant we never had to reason about a half-written memory.
-
-To **AWS**, for infrastructure boring enough to forget about.
-
-To **Anthropic** and **Hugging Face**, for models that made a tiered routing strategy affordable.
-
-To the maintainers of **teloxide**, **sqlx**, **axum**, **tokio**, and **yt-dlp** — a small visible
-surface sitting on years of someone else's careful work.
+* **CockroachDB**: For providing a unified, multi-model database engine. Native vector support eliminated the need for a separate vector database, while serializable ACID transactions ensured strict consistency across the knowledge graph, message buffers, and job queues.
+* **Amazon Web Services (AWS)**: For providing reliable cloud hosting infrastructure for our containerized compute workloads and webhook handlers.
+* **Hugging Face**: For hosting the text embedding models used in the semantic retrieval and relevance pipeline.
+* **Open Source Communities**: For maintaining the foundational libraries and utilities—specifically `teloxide`, `sqlx`, `axum`, `tokio`, and `yt-dlp`—that power the core agent systems.
 
 <div align="center">
 
